@@ -7,6 +7,7 @@ using RestSharp;
 using Skymey_main_gateaway.Data;
 using Skymey_main_Gateway;
 using Skymey_main_Gateway.Models.JWT;
+using Skymey_main_Gateway.Models.Login;
 using Skymey_main_Gateway.Models.Tables.User;
 using System.Text.Json;
 
@@ -39,10 +40,8 @@ namespace Skymey_main_gateaway.Controllers
                 var client = new RestClient(options);
                 var request = new RestRequest("/api/User/GetUsers", Method.Get);
                 request.AddHeader("Authorization", "Bearer " + token);
-                var body = @"";
-                request.AddParameter("text/plain", body, ParameterType.RequestBody);
                 var r = client.ExecuteAsync(request).Result.Content;
-                var userd = JsonSerializer.Deserialize<List<SU_001>>(r);
+                var userd = JsonSerializer.Deserialize<List<SU_001R>>(r);
                 return Ok(userd);
             }
             catch (Exception ex) {
@@ -79,8 +78,15 @@ namespace Skymey_main_gateaway.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login(SU_001 user,string token)
+        public async Task<IActionResult> Login(Login user)
         {
+            SU_001 user_to_send = new SU_001();
+            user_to_send.Email = user.email;
+            user_to_send.Password = user.password;
+            user_to_send.FirstName = "";
+            user_to_send.LastName = "";
+            user_to_send.RefreshToken = "";
+            user_to_send.RefreshTokenExpiryTime = DateTime.UtcNow;
             string url = _optAccess.Value.Server + ":" + _optAccess.Value.Port;
             try
             {
@@ -90,8 +96,7 @@ namespace Skymey_main_gateaway.Controllers
                 };
                 var client = new RestClient(options);
                 var request = new RestRequest("/api/User/Login", Method.Post);
-                request.AddHeader("Authorization", "Bearer " + token);
-                var json = new JavaScriptSerializer().Serialize(user);
+                var json = new JavaScriptSerializer().Serialize(user_to_send);
                 var body = json;
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
                 var r = client.ExecuteAsync(request).Result.Content;
@@ -106,8 +111,15 @@ namespace Skymey_main_gateaway.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register(SU_001 user,string token)
+        public async Task<IActionResult> Register(SU_001S user)
         {
+            SU_001 user_to_send = new SU_001();
+            user_to_send.Email = user.Email;
+            user_to_send.Password = user.Password;
+            user_to_send.FirstName = user.FirstName;
+            user_to_send.LastName = user.LastName;
+            user_to_send.RefreshToken = "";
+            user_to_send.RefreshTokenExpiryTime = DateTime.UtcNow;
             string url = _optAccess.Value.Server + ":" + _optAccess.Value.Port;
             try
             {
@@ -117,7 +129,6 @@ namespace Skymey_main_gateaway.Controllers
                 };
                 var client = new RestClient(options);
                 var request = new RestRequest("/api/User/Register", Method.Post);
-                request.AddHeader("Authorization", "Bearer " + token);
                 var json = new JavaScriptSerializer().Serialize(user);
                 var body = json;
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
