@@ -27,19 +27,24 @@ namespace Skymey_main_gateaway.Controllers
         [Route("GetUsers")]
         public async Task<ActionResult> GetUsers(string token)
         {
+            string url = _optAccess.Value.Server + ":" + _optAccess.Value.Port;
             try
             {
-                string url = _optAccess.Value.Server + ":" + _optAccess.Value.Port + "/api/User/GetUsers";
-                var client = new RestClient(url);
-                var request = new RestRequest(url, Method.Get);
-                request.AddHeader("Content-Type", "application/json");
+                var options = new RestClientOptions(url)
+                {
+                    MaxTimeout = -1,
+                };
+                var client = new RestClient(options);
+                var request = new RestRequest("/api/User/GetUsers", Method.Get);
                 request.AddHeader("Authorization", "Bearer " + token);
+                var body = @"";
+                request.AddParameter("text/plain", body, ParameterType.RequestBody);
                 var r = client.ExecuteAsync(request).Result.Content;
                 var userd = JsonSerializer.Deserialize<List<SU_001>>(r);
                 return Ok(userd);
             }
             catch (Exception ex) {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message + url);
             }
         }
     }
