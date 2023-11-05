@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Nancy.Json;
 using RestSharp;
 using Skymey_main_gateaway.Data;
+using Skymey_main_gateaway.Models.Tables.User;
 using Skymey_main_Gateway;
 using Skymey_main_Gateway.Models.JWT;
-using Skymey_main_Gateway.Models.Login;
 using Skymey_main_Gateway.Models.Tables.User;
 using System.Text.Json;
 
@@ -41,7 +42,7 @@ namespace Skymey_main_gateaway.Controllers
                 var request = new RestRequest("/api/User/GetUsers", Method.Get);
                 request.AddHeader("Authorization", "Bearer " + token);
                 var r = client.ExecuteAsync(request).Result.Content;
-                var userd = JsonSerializer.Deserialize<List<SU_001R>>(r);
+                var userd = JsonSerializer.Deserialize<List<SU_001ListViewModel>>(r);
                 return Ok(userd);
             }
             catch (Exception ex) {
@@ -78,11 +79,11 @@ namespace Skymey_main_gateaway.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login(Login user)
+        public async Task<IActionResult> Login(SU_001LoginViewModel user)
         {
             SU_001 user_to_send = new SU_001();
-            user_to_send.Email = user.email;
-            user_to_send.Password = user.password;
+            user_to_send.Email = user.Email;
+            user_to_send.Password = user.Password;
             user_to_send.FirstName = "";
             user_to_send.LastName = "";
             user_to_send.RefreshToken = "";
@@ -111,7 +112,7 @@ namespace Skymey_main_gateaway.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register(SU_001S user)
+        public async Task<IActionResult> Register(SU_001RegisterViewModel user)
         {
             SU_001 user_to_send = new SU_001();
             user_to_send.Email = user.Email;
