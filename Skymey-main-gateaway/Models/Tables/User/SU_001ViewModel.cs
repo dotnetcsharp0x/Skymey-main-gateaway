@@ -6,7 +6,11 @@ namespace Skymey_main_gateaway.Models.Tables.User
 {
     public class  SU_001LoginViewModel
     {
+        [JsonProperty("Email")]
+        [JsonPropertyName("Email")]
         public string Email { get; set; }
+        [JsonProperty("Password")]
+        [JsonPropertyName("Password")]
         public string Password { get; set; }
     }
     public class SU_001RegisterViewModel

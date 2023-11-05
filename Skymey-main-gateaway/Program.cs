@@ -38,6 +38,7 @@ builder.Services.AddHttpsRedirection(options =>
     options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
     options.HttpsPort = 5001;
 });
+builder.WebHost.UseUrls("http://192.168.1.85:5005;https://192.168.1.85:5007;");
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGen(option => {
