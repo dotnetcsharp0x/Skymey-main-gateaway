@@ -41,7 +41,7 @@ builder.Services.AddHttpsRedirection(options =>
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGen(option => {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "myHoldAPI", Version = "v1" });
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "SkymeyAPI", Version = "v1" });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -78,6 +78,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 builder.Services.AddOptions();
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTSettings")); // Сопоставление JWTSettings с файлом конфигурации appsettings.json
 builder.Services.Configure<UserSettings>(builder.Configuration.GetSection("ServiceSettings:UserAuth")); // Сопоставление JWTSettings с файлом конфигурации appsettings.json
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("ServiceSettings:MongoDb")); // Сопоставление JWTSettings с файлом конфигурации appsettings.json
 
 var secretKey = builder.Configuration.GetSection("JWTSettings:SecretKey").Value; // Секретный код из appsettings.json
 var issuer = builder.Configuration.GetSection("JWTSettings:Issuer").Value; // Издатель токена. Можно указать любое название
@@ -107,6 +108,7 @@ builder.Services.AddAuthentication(option => { // Указываем аутентификацию с пом
 #endregion
 builder.Services.AddTransient<ITokenService, CreateJWTToken>();
 builder.Services.AddTransient<UserSettings>();
+builder.Services.AddTransient<MongoDbSettings>();
 var app = builder.Build();
 
 app.UseHttpsRedirection().UseCertificateForwarding().UseCors().UseHsts();

@@ -21,7 +21,11 @@ namespace Skymey_main_gateaway.Controllers
         private readonly ILogger<UserController> _logger;
         private readonly IOptions<UserSettings> _optAccess;
         private readonly IOptions<JWTSettings> _optAccessJWT;
-        public UserController(ILogger<UserController> logger, IOptions<UserSettings> optAccess, IOptions<JWTSettings> optAccessJWT)
+        public UserController(
+            ILogger<UserController> logger, 
+            IOptions<UserSettings> optAccess, 
+            IOptions<JWTSettings> optAccessJWT
+        )
         {
             _logger = logger;
             _optAccess = optAccess;
