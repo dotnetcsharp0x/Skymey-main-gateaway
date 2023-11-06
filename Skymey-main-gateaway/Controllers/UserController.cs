@@ -9,6 +9,7 @@ using Skymey_main_gateaway.Data;
 using Skymey_main_Gateway;
 using Skymey_main_lib.Models.JWT;
 using Skymey_main_lib.Models.Tables.User;
+using System.Net;
 using System.Text.Json;
 
 namespace Skymey_main_gateaway.Controllers
@@ -92,6 +93,7 @@ namespace Skymey_main_gateaway.Controllers
             user_to_send.RefreshToken = "";
             user_to_send.RefreshTokenExpiryTime = DateTime.UtcNow;
             string url = _optAccess.Value.Server + ":" + _optAccess.Value.Port;
+            HttpStatusCode status_code=HttpStatusCode.Accepted;
             try
             {
                 var options = new RestClientOptions(url)
@@ -103,13 +105,21 @@ namespace Skymey_main_gateaway.Controllers
                 var json = new JavaScriptSerializer().Serialize(user_to_send);
                 var body = json;
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
-                var r = client.ExecuteAsync(request).Result.Content;
-                var userd = JsonSerializer.Deserialize<AuthenticatedResponse>(r);
-                return Ok(userd);
+                var resp = client.ExecuteAsync(request).Result;
+                status_code = resp.StatusCode;
+                var userd = JsonSerializer.Deserialize<AuthenticatedResponse>(resp.Content);
+                if (status_code == HttpStatusCode.OK)
+                {
+                    return Ok(userd);
+                }
+                else
+                {
+                    return StatusCode(Convert.ToInt32(status_code));
+                }
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message + url);
+                return StatusCode(Convert.ToInt32(status_code));
             }
         }
 
@@ -125,6 +135,7 @@ namespace Skymey_main_gateaway.Controllers
             user_to_send.RefreshToken = "";
             user_to_send.RefreshTokenExpiryTime = DateTime.UtcNow;
             string url = _optAccess.Value.Server + ":" + _optAccess.Value.Port;
+            HttpStatusCode status_code = HttpStatusCode.Accepted;
             try
             {
                 var options = new RestClientOptions(url)
@@ -136,9 +147,17 @@ namespace Skymey_main_gateaway.Controllers
                 var json = new JavaScriptSerializer().Serialize(user);
                 var body = json;
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
-                var r = client.ExecuteAsync(request).Result.Content;
-                var userd = JsonSerializer.Deserialize<AuthenticatedResponse>(r);
-                return Ok(userd);
+                var resp = client.ExecuteAsync(request).Result;
+                status_code = resp.StatusCode;
+                if (status_code == HttpStatusCode.OK)
+                {
+                    var userd = JsonSerializer.Deserialize<AuthenticatedResponse>(resp.Content);
+                    return Ok(userd);
+                }
+                else
+                {
+                    return StatusCode(Convert.ToInt32(status_code));
+                }
             }
             catch (Exception ex)
             {
