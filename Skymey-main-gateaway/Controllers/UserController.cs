@@ -107,10 +107,9 @@ namespace Skymey_main_gateaway.Controllers
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
                 var resp = client.ExecuteAsync(request).Result;
                 status_code = resp.StatusCode;
-                var userd = JsonSerializer.Deserialize<AuthenticatedResponse>(resp.Content);
                 if (status_code == HttpStatusCode.OK)
                 {
-                    return Ok(userd);
+                    return Ok(JsonSerializer.Deserialize<AuthenticatedResponse>(resp.Content));
                 }
                 else
                 {
@@ -151,8 +150,7 @@ namespace Skymey_main_gateaway.Controllers
                 status_code = resp.StatusCode;
                 if (status_code == HttpStatusCode.OK)
                 {
-                    var userd = JsonSerializer.Deserialize<AuthenticatedResponse>(resp.Content);
-                    return Ok(userd);
+                    return Ok(JsonSerializer.Deserialize<AuthenticatedResponse>(resp.Content));
                 }
                 else
                 {
