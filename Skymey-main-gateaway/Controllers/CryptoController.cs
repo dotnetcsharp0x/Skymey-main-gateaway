@@ -4,8 +4,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using Skymey_main_gateaway.Data;
-using Skymey_main_gateaway.Models;
-using Skymey_main_gateaway.Models.Tables.User;
+using Skymey_main_lib.Models;
 using System.Text.Json;
 
 namespace Skymey_main_gateaway.Controllers

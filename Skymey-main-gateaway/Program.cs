@@ -9,11 +9,11 @@ using System.Net;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using System.Security.Cryptography.X509Certificates;
 using Skymey_main_Gateway.Actions.JWT;
-using Skymey_main_Gateway.Interfaces.JWT;
 using Skymey_main_Gateway;
-using AnSkymey_main_Gatewayevo.Data;
 using Microsoft.EntityFrameworkCore;
 using Skymey_main_gateaway.Data;
+using Microsoft.Extensions.Options;
+using Skymey_main_lib.Interfaces.JWT;
 
 var builder = WebApplication.CreateBuilder(args);
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");

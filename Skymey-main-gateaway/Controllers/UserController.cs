@@ -6,10 +6,9 @@ using Microsoft.Extensions.Options;
 using Nancy.Json;
 using RestSharp;
 using Skymey_main_gateaway.Data;
-using Skymey_main_gateaway.Models.Tables.User;
 using Skymey_main_Gateway;
-using Skymey_main_Gateway.Models.JWT;
-using Skymey_main_Gateway.Models.Tables.User;
+using Skymey_main_lib.Models.JWT;
+using Skymey_main_lib.Models.Tables.User;
 using System.Text.Json;
 
 namespace Skymey_main_gateaway.Controllers

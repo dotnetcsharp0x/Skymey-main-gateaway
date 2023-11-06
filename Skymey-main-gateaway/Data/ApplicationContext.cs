@@ -1,8 +1,9 @@
-﻿using Skymey_main_Gateway.Models.Tables.Groups;
-using Skymey_main_Gateway.Models.Tables.User;
+﻿
 using Microsoft.EntityFrameworkCore;
+using Skymey_main_lib.Models.Tables.Groups;
+using Skymey_main_lib.Models.Tables.User;
 
-namespace AnSkymey_main_Gatewayevo.Data
+namespace Skymey_main_gateaway.Data
 {
     public class ApplicationContext : DbContext
     {
