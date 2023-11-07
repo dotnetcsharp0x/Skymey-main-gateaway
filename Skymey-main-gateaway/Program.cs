@@ -14,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using Skymey_main_gateaway.Data;
 using Microsoft.Extensions.Options;
 using Skymey_main_lib.Interfaces.JWT;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -87,6 +90,17 @@ var audience = builder.Configuration.GetSection("JWTSettings:Audience").Value; /
 
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
+builder.Services.AddRateLimiter(rateLimiterOptions =>
+{
+    rateLimiterOptions.AddSlidingWindowLimiter("token", options =>
+    {
+        options.PermitLimit = 10;
+        options.Window = TimeSpan.FromSeconds(5);
+        options.SegmentsPerWindow = 2;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 10;
+    });
+});
 
 builder.Services.AddAuthentication(option => { // ”казываем аутентификацию с помощью токенов
     option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -122,5 +136,6 @@ app.UseCors("MyPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("token"); ;
+app.UseRateLimiter();
 app.Run();
