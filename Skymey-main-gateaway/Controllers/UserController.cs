@@ -56,7 +56,7 @@ namespace Skymey_main_gateaway.Controllers
 
         [HttpPost]
         [Route("refresh")]
-        public async Task<IActionResult> Refresh(TokenApiModel tokenApiModel)
+        public async Task<IActionResult> Refresh(AuthenticatedResponse tokenApiModel)
         {
             string url = _optAccess.Value.Server + ":" + _optAccess.Value.Port;
             try
@@ -72,8 +72,11 @@ namespace Skymey_main_gateaway.Controllers
                 var body = json;
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
                 var r = client.ExecuteAsync(request).Result.Content;
-                var userd = JsonSerializer.Deserialize<AuthenticatedResponse>(r);
-                return Ok(userd);
+                var userd = JsonSerializer.Deserialize<AuthenticatedResponseView>(r);
+                AuthenticatedResponse ar = new AuthenticatedResponse();
+                ar.AccessToken = userd.AccessToken;
+                ar.RefreshToken = userd.RefreshToken;
+                return Ok(ar);
             }
             catch (Exception ex)
             {
@@ -109,7 +112,11 @@ namespace Skymey_main_gateaway.Controllers
                 status_code = resp.StatusCode;
                 if (status_code == HttpStatusCode.OK)
                 {
-                    return Ok(JsonSerializer.Deserialize<AuthenticatedResponse>(resp.Content));
+                    var resp1 = JsonSerializer.Deserialize<AuthenticatedResponseView>(resp.Content);
+                    AuthenticatedResponse ar = new AuthenticatedResponse();
+                    ar.AccessToken = resp1.AccessToken;
+                    ar.RefreshToken = resp1.RefreshToken;
+                    return Ok(ar);
                 }
                 else
                 {
@@ -150,7 +157,11 @@ namespace Skymey_main_gateaway.Controllers
                 status_code = resp.StatusCode;
                 if (status_code == HttpStatusCode.OK)
                 {
-                    return Ok(JsonSerializer.Deserialize<AuthenticatedResponse>(resp.Content));
+                    var resp1 = JsonSerializer.Deserialize<AuthenticatedResponseView>(resp.Content);
+                    AuthenticatedResponse ar = new AuthenticatedResponse();
+                    ar.AccessToken = resp1.AccessToken;
+                    ar.RefreshToken = resp1.RefreshToken;
+                    return Ok(ar);
                 }
                 else
                 {
