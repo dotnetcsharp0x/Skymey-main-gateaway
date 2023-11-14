@@ -1,33 +1,32 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 using Skymey_main_gateaway.Data;
-using Skymey_main_lib.Models;
-using Skymey_main_lib.Models.Prices;
 using Skymey_main_lib.Models.Prices.CurrentPricesViewModel;
 using Skymey_main_lib.Models.Prices.StockPrices;
+using Skymey_main_lib.Models.Prices.StockPricesMongo;
 using System.Text.Json;
 
 namespace Skymey_main_gateaway.Controllers
 {
-    [Route("api/Crypto")]
+    [Route("api/Stock")]
     [ApiController]
-    public class CryptoController : ControllerBase
+    public class StockController : Controller
     {
-        private readonly ILogger<CryptoController> _logger;
+
+        private readonly ILogger<StockController> _logger;
         private readonly IOptions<MongoDbSettings> _optMongo;
-        public CryptoController(
-            ILogger<CryptoController> logger,
+        public StockController(
+            ILogger<StockController> logger,
             IOptions<MongoDbSettings> optMongo
-            ) {
+            )
+        {
             _logger = logger;
             _optMongo = optMongo;
         }
         [HttpGet]
-        [Route("GetExchanges")]
-        public IActionResult GetExchanges()
+        [Route("GetPrices")]
+        public IActionResult GetPrices()
         {
             string url = _optMongo.Value.Server + ":" + _optMongo.Value.Port;
             try
@@ -37,11 +36,11 @@ namespace Skymey_main_gateaway.Controllers
                     MaxTimeout = -1,
                 };
                 var client = new RestClient(options);
-                var request = new RestRequest("/api/Crypto/GetExchanges", Method.Get);
+                var request = new RestRequest("/api/Stock/GetPrices", Method.Get);
                 //request.AddHeader("Authorization", "Bearer " + token);
                 var r = client.ExecuteAsync(request).Result.Content;
-                var userd = JsonSerializer.Deserialize<HashSet<Exchanges>>(r);
-                var ExchangesVM = (from i in userd select new ExchangesViewModel { Name = i.Name,Blockchain=i.Blockchain,Pairs=i.Pairs,Trades=i.Trades,Type=i.Type,Volume24h=i.Volume24h});
+                var userd = JsonSerializer.Deserialize<List<StockPricesMongo>>(r);
+                var ExchangesVM = (from i in userd select new CurrentPricesViewModel { Ticker = i.Ticker, Figi = i.Figi, Price = i.Price, Currency = i.Currency, Update = i.Update });
                 return Ok(ExchangesVM);
             }
             catch (Exception ex)
@@ -49,6 +48,6 @@ namespace Skymey_main_gateaway.Controllers
                 return BadRequest(ex.Message + url);
             }
         }
-        
     }
 }
+
