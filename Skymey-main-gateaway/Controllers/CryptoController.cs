@@ -5,9 +5,11 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using Skymey_main_gateaway.Data;
 using Skymey_main_lib.Models;
+using Skymey_main_lib.Models.CryptoCurrentPricesView;
 using Skymey_main_lib.Models.Prices;
 using Skymey_main_lib.Models.Prices.CurrentPricesViewModel;
 using Skymey_main_lib.Models.Prices.StockPrices;
+using Skymey_main_lib.Models.Prices.StockPricesMongo;
 using System.Text.Json;
 
 namespace Skymey_main_gateaway.Controllers
@@ -49,6 +51,30 @@ namespace Skymey_main_gateaway.Controllers
                 return BadRequest(ex.Message + url);
             }
         }
-        
+
+        [HttpGet]
+        [Route("GetPrices")]
+        public IActionResult GetPrices()
+        {
+            string url = _optMongo.Value.Server + ":" + _optMongo.Value.Port;
+            try
+            {
+                var options = new RestClientOptions(url)
+                {
+                    MaxTimeout = -1,
+                };
+                var client = new RestClient(options);
+                var request = new RestRequest("/api/Crypto/GetPrices", Method.Get);
+                //request.AddHeader("Authorization", "Bearer " + token);
+                var r = client.ExecuteAsync(request).Result.Content;
+                var userd = JsonSerializer.Deserialize<List<CryptoCurrentPricesView>>(r);
+                var resp = (from i in userd select new CryptoCurrentPricesView { Ticker = i.Ticker, Price = i.Price, Update = i.Update});
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message + url);
+            }
+        }
     }
 }
