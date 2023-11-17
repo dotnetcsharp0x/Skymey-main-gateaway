@@ -57,19 +57,16 @@ namespace Skymey_main_gateaway.Controllers
         [Route("GetShares")]
         public async Task<IActionResult> GetShares()
         {
-            string url = _optMongo.Value.Server + ":" + _optMongo.Value.Port;
             try
             {
-                HttpClient Http = new HttpClient();
-                var userd = await Http.GetFromJsonAsync<TickerList[]>(_optMongo.Value.Server+":"+ _optMongo.Value.Port + "/api/Stock/GetShares");
+                var userd = await new HttpClient().GetFromJsonAsync<TickerList[]>(_optMongo.Value.Server + ":" + _optMongo.Value.Port + "/api/Stock/GetShares");
                 var ExchangesVM = (from i in userd select new SharesList { Ticker = i.ticker, Name = i.name, Market = i.market, Locale = i.locale, Type = i.type, Currency_name = i.currency_name,
                 Last_updated_utc = i.last_updated_utc, Composite_figi = i.composite_figi, Share_class_figi = i.share_class_figi, Primary_exchange = i.primary_exchange, Cik = i.cik, Update = i.Update});
-                Http.Dispose();
                 return Ok(ExchangesVM);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message + url);
+                return BadRequest(ex.Message);
             }
         }
     }

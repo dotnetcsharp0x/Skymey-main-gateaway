@@ -10,6 +10,8 @@ using Skymey_main_lib.Models.Prices;
 using Skymey_main_lib.Models.Prices.CurrentPricesViewModel;
 using Skymey_main_lib.Models.Prices.StockPrices;
 using Skymey_main_lib.Models.Prices.StockPricesMongo;
+using Skymey_main_lib.Models.Tickers.Polygon;
+using Skymey_main_lib.Models.Tickers;
 using System.Text.Json;
 
 namespace Skymey_main_gateaway.Controllers
@@ -74,6 +76,20 @@ namespace Skymey_main_gateaway.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message + url);
+            }
+        }
+
+        [HttpGet]
+        [Route("/api/[controller]/Exchange/Okx/GetPrices")]
+        public async Task<IActionResult> ExchangeOkxGetPrices()
+        {
+            try
+            {
+                return Ok(await new HttpClient().GetFromJsonAsync<CryptoCurrentPricesView[]>(_optMongo.Value.Server + ":" + _optMongo.Value.Port + "/api/Crypto/Exchange/Okx/GetPrices"));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }
