@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using RestSharp;
 using Skymey_main_gateaway.Data;
 using Skymey_main_lib.Models.CryptoCurrentPricesView;
+using Skymey_main_lib.Models.Dividends;
 using Skymey_main_lib.Models.Prices.CurrentPricesViewModel;
 using Skymey_main_lib.Models.Prices.StockPrices;
 using Skymey_main_lib.Models.Prices.StockPricesMongo;
@@ -63,6 +64,19 @@ namespace Skymey_main_gateaway.Controllers
                 var ExchangesVM = (from i in userd select new SharesList { Ticker = i.ticker, Name = i.name, Market = i.market, Locale = i.locale, Type = i.type, Currency_name = i.currency_name,
                 Last_updated_utc = i.last_updated_utc, Composite_figi = i.composite_figi, Share_class_figi = i.share_class_figi, Primary_exchange = i.primary_exchange, Cik = i.cik, Update = i.Update});
                 return Ok(ExchangesVM);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
+        [Route("GetDividends")]
+        public async Task<IActionResult> GetDividends(string ticker)
+        {
+            try
+            {
+                return Ok(await new HttpClient().GetFromJsonAsync<StockDividends[]>(_optMongo.Value.Server + ":" + _optMongo.Value.Port + $"/api/Stock/GetDividends?ticker={ticker}"));
             }
             catch (Exception ex)
             {
