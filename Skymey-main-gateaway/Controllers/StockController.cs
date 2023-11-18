@@ -7,6 +7,7 @@ using Skymey_main_lib.Models.Dividends;
 using Skymey_main_lib.Models.Prices.CurrentPricesViewModel;
 using Skymey_main_lib.Models.Prices.StockPrices;
 using Skymey_main_lib.Models.Prices.StockPricesMongo;
+using Skymey_main_lib.Models.Prices.StockPricesView;
 using Skymey_main_lib.Models.Tickers;
 using Skymey_main_lib.Models.Tickers.Polygon;
 using System.Net.Http.Json;
@@ -32,26 +33,16 @@ namespace Skymey_main_gateaway.Controllers
         }
         [HttpGet]
         [Route("GetPrices")]
-        public IActionResult GetPrices()
+        public async Task<IActionResult> GetPrices()
         {
-            string url = _optMongo.Value.Server + ":" + _optMongo.Value.Port;
             try
             {
-                var options = new RestClientOptions(url)
-                {
-                    MaxTimeout = -1,
-                };
-                var client = new RestClient(options);
-                var request = new RestRequest("/api/Stock/GetPrices", Method.Get);
-                //request.AddHeader("Authorization", "Bearer " + token);
-                var r = client.ExecuteAsync(request).Result.Content;
-                var userd = JsonSerializer.Deserialize<List<StockPricesMongo>>(r);
-                var ExchangesVM = (from i in userd select new CurrentPricesViewModel { Ticker = i.Ticker, Figi = i.Figi, Price = i.Price, Currency = i.Currency, Update = i.Update });
-                return Ok(ExchangesVM);
+                var resp = await new HttpClient().GetFromJsonAsync<StockPricesView[]>(_optMongo.Value.Server + ":" + _optMongo.Value.Port + "/api/Stock/GetPrices");
+                return Ok(resp);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message + url);
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet]
